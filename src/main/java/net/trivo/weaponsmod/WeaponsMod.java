@@ -23,6 +23,7 @@ import static net.trivo.weaponsmod.utilities.TalentsUtilities.*;
 public class WeaponsMod {
     public static final String MODID = "trivoweapons";
     public static final Logger LOGGER = LogUtils.getLogger();
+    public static final String FIRST_JOIN_TALENTS_KEY = "first_join_talents";
 
     public WeaponsMod(net.neoforged.bus.api.IEventBus modEventBus, ModContainer modContainer) {
         NeoForge.EVENT_BUS.register(this);
@@ -35,11 +36,11 @@ public class WeaponsMod {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
         CompoundTag persistentData = player.getPersistentData();
 
-        if (hasAnyTalent(persistentData)) return;
-        Set<String> assigned = new HashSet<>();
-
-        for (int i = 0; i < 3; i++) {
-            assignRandomTalent(player, assigned);
+        if (!(persistentData.contains(FIRST_JOIN_TALENTS_KEY))) {
+            for (int i = 0; i < 3; i++) {
+                assignRandomTalent(player, new HashSet<>());
+            }
+            persistentData.putBoolean(FIRST_JOIN_TALENTS_KEY, true);
         }
     }
 
@@ -54,6 +55,8 @@ public class WeaponsMod {
         for (TalentsList.Talents talent : TalentsList.Talents.values()) {
             copyTalentIfPresent(oldData, newData, talent.getKey());
         }
+
+        copyTalentIfPresent(oldData, newData, FIRST_JOIN_TALENTS_KEY);
     }
 
     private void copyTalentIfPresent(CompoundTag oldData, CompoundTag newData, String key) {

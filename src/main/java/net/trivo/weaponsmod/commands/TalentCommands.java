@@ -22,20 +22,27 @@ public class TalentCommands {
     };
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
-        var root = Commands.literal("talents")
-                .requires(source -> source.hasPermission(2));
+        var root = Commands.literal("talents");
 
 
-        root.then(Commands.literal("assign")
+        root.requires(source -> source.hasPermission(2))
+                .then(Commands.literal("assign")
                 .then(Commands.argument("player", EntityArgument.player())
                         .then(Commands.literal("random")
                                 .executes(context -> {
                                     ServerPlayer player = EntityArgument.getPlayer(context, "player");
-                                    if (!(TalentsUtilities.hasAllTalents(player.getPersistentData()))) {
+                                    if (!TalentsUtilities.hasAllTalents(player.getPersistentData())) {
                                         TalentsUtilities.assignRandomTalent(player, new HashSet<>());
-                                        player.sendSystemMessage(Component.literal(player.getName().getString() + " got a random talent."));
-                                    } else
-                                        player.sendSystemMessage(Component.literal(player.getName().getString() + " already has all the talents."));
+                                        context.getSource().sendSuccess(
+                                                () -> Component.literal("Given " + player.getName().getString() + " a random talent."),
+                                                false
+                                        );
+                                    } else {
+                                        context.getSource().sendSuccess(
+                                                () -> Component.literal(player.getName().getString() + " already has all the talents."),
+                                                false
+                                        );
+                                    }
                                     return 1;
                                 }))
 
@@ -44,25 +51,40 @@ public class TalentCommands {
                                 .executes(context -> {
                                     ServerPlayer player = EntityArgument.getPlayer(context, "player");
                                     String talent = StringArgumentType.getString(context, "talent");
-                                    if (!(player.getPersistentData().contains(TalentsList.getKeyFromKeyword(talent)))) {
+                                    if (!player.getPersistentData().contains(TalentsList.getKeyFromKeyword(talent))) {
                                         TalentsUtilities.assignTalent(player, TalentsList.Talents.valueOf(talent.toUpperCase()), new HashSet<>());
-                                        player.sendSystemMessage(Component.literal(player.getName().getString() + " got the talent " + talent.toLowerCase() + "."));
-                                    } else
-                                        player.sendSystemMessage(Component.literal(player.getName().getString() + " already has the talent " + talent.toLowerCase() + "."));
+                                        context.getSource().sendSuccess(
+                                                () -> Component.literal("Given " + player.getName().getString() + " the talent " + talent.toLowerCase() + "."),
+                                                false
+                                        );
+                                    } else {
+                                        context.getSource().sendSuccess(
+                                                () -> Component.literal(player.getName().getString() + " already has the talent " + talent.toLowerCase() + "."),
+                                                false
+                                        );
+                                    }
                                     return 1;
                                 }))));
 
 
-        root.then(Commands.literal("remove")
+        root.requires(source -> source.hasPermission(2))
+                .then(Commands.literal("remove")
                 .then(Commands.argument("player", EntityArgument.player())
                         .then(Commands.literal("random")
                                 .executes(context -> {
                                     ServerPlayer player = EntityArgument.getPlayer(context, "player");
                                     if (TalentsUtilities.hasAnyTalent(player.getPersistentData())) {
                                         TalentsUtilities.removeRandomTalent(player, new HashSet<>());
-                                        player.sendSystemMessage(Component.literal(player.getName().getString() + " lost a random talent."));
-                                    } else
-                                        player.sendSystemMessage(Component.literal(player.getName().getString() + " doesn't have any talents."));
+                                        context.getSource().sendSuccess(
+                                                () -> Component.literal("Removed a random talent from " + player.getName().getString() + "."),
+                                                false
+                                        );
+                                    } else {
+                                        context.getSource().sendSuccess(
+                                                () -> Component.literal(player.getName().getString() + " doesn't have any talents."),
+                                                false
+                                        );
+                                    }
                                     return 1;
                                 }))
 
@@ -73,9 +95,16 @@ public class TalentCommands {
                                     String talent = StringArgumentType.getString(context, "talent");
                                     if (player.getPersistentData().contains(TalentsList.getKeyFromKeyword(talent))) {
                                         TalentsUtilities.removeTalent(player, TalentsList.Talents.valueOf(talent.toUpperCase()), new HashSet<>());
-                                        player.sendSystemMessage(Component.literal(player.getName().getString() + " lost the talent " + talent.toLowerCase() + "."));
-                                    } else
-                                        player.sendSystemMessage(Component.literal(player.getName().getString() + " doesn't have the talent " + talent.toLowerCase() + "."));
+                                        context.getSource().sendSuccess(
+                                                () -> Component.literal("Removed the talent " + talent.toLowerCase() + " from " + player.getName().getString() + "."),
+                                                false
+                                        );
+                                    } else {
+                                        context.getSource().sendSuccess(
+                                                () -> Component.literal(player.getName().getString() + " doesn't have the talent " + talent.toLowerCase() + "."),
+                                                false
+                                        );
+                                    }
                                     return 1;
                                 }))));
 
@@ -85,15 +114,24 @@ public class TalentCommands {
                         .executes(context -> {
                             ServerPlayer player = EntityArgument.getPlayer(context, "player");
                             if (TalentsUtilities.hasAnyTalent(player.getPersistentData())) {
-                                player.sendSystemMessage(Component.literal(player.getName().getString() + " has the following talents:"));
+                                context.getSource().sendSuccess(
+                                        () -> Component.literal(player.getName().getString() + " has the following talents:"),
+                                        false
+                                );
                                 for (TalentsList.Talents talent : TalentsList.Talents.values()) {
                                     if (player.getPersistentData().contains(talent.getKey())) {
-                                        player.sendSystemMessage(Component.literal(talent.toString()));
+                                        context.getSource().sendSuccess(
+                                                () -> Component.literal(talent.toString()),
+                                                false
+                                        );
                                     }
                                 }
-                            } else
-                                player.sendSystemMessage(Component.literal(player.getName().getString() + " has no talents."));
-
+                            } else {
+                                context.getSource().sendSuccess(
+                                        () -> Component.literal(player.getName().getString() + " has no talents."),
+                                        false
+                                );
+                            }
                             return 1;
                         })));
 
