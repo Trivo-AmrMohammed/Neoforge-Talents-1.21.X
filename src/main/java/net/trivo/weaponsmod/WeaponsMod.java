@@ -4,7 +4,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.player.*;
-import net.trivo.weaponsmod.commands.TalentCommands;
+import net.trivo.weaponsmod.commands.TalentsCommands;
 import net.trivo.weaponsmod.events.TalentsEventManager;
 import net.trivo.weaponsmod.talents.TalentsList;
 import org.slf4j.Logger;
@@ -67,6 +67,6 @@ public class WeaponsMod {
 
     @SubscribeEvent
     public void onCommandRegister(RegisterCommandsEvent event) {
-        TalentCommands.register(event.getDispatcher());
+        TalentsCommands.register(event.getDispatcher());
     }
 }

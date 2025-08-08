@@ -13,20 +13,13 @@ import net.trivo.weaponsmod.utilities.TalentsUtilities;
 
 import java.util.HashSet;
 
-public class TalentCommands {
-    private static final SuggestionProvider<CommandSourceStack> TALENT_SUGGESTIONS = (context, builder) -> {
-        for (TalentsList.Talents talent : TalentsList.Talents.values()) {
-            builder.suggest(talent.toString().toLowerCase());
-        }
-        return builder.buildFuture();
-    };
-
+public class TalentsCommands {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
-        var root = Commands.literal("talents");
+        var root = Commands.literal("talents")
+                .requires(source -> source.hasPermission(2));
 
 
-        root.requires(source -> source.hasPermission(2))
-                .then(Commands.literal("assign")
+        root.then(Commands.literal("assign")
                 .then(Commands.argument("player", EntityArgument.player())
                         .then(Commands.literal("random")
                                 .executes(context -> {
@@ -67,8 +60,7 @@ public class TalentCommands {
                                 }))));
 
 
-        root.requires(source -> source.hasPermission(2))
-                .then(Commands.literal("remove")
+        root.then(Commands.literal("remove")
                 .then(Commands.argument("player", EntityArgument.player())
                         .then(Commands.literal("random")
                                 .executes(context -> {
@@ -91,17 +83,17 @@ public class TalentCommands {
                         .then(Commands.argument("talent", StringArgumentType.string())
                                 .suggests(TALENT_SUGGESTIONS)
                                 .executes(context -> {
-                                    ServerPlayer player = EntityArgument.getPlayer(context, "player");
+                                    ServerPlayer serverPlayer = EntityArgument.getPlayer(context, "player");
                                     String talent = StringArgumentType.getString(context, "talent");
-                                    if (player.getPersistentData().contains(TalentsList.getKeyFromKeyword(talent))) {
-                                        TalentsUtilities.removeTalent(player, TalentsList.Talents.valueOf(talent.toUpperCase()), new HashSet<>());
+                                    if (serverPlayer.getPersistentData().contains(TalentsList.getKeyFromKeyword(talent))) {
+                                        TalentsUtilities.removeTalent(serverPlayer, TalentsList.Talents.valueOf(talent.toUpperCase()), new HashSet<>());
                                         context.getSource().sendSuccess(
-                                                () -> Component.literal("Removed the talent " + talent.toLowerCase() + " from " + player.getName().getString() + "."),
+                                                () -> Component.literal("Removed the talent " + talent.toLowerCase() + " from " + serverPlayer.getName().getString() + "."),
                                                 false
                                         );
                                     } else {
                                         context.getSource().sendSuccess(
-                                                () -> Component.literal(player.getName().getString() + " doesn't have the talent " + talent.toLowerCase() + "."),
+                                                () -> Component.literal(serverPlayer.getName().getString() + " doesn't have the talent " + talent.toLowerCase() + "."),
                                                 false
                                         );
                                     }
@@ -110,31 +102,63 @@ public class TalentCommands {
 
 
         root.then(Commands.literal("list")
-                .then(Commands.argument("player", EntityArgument.player())
-                        .executes(context -> {
-                            ServerPlayer player = EntityArgument.getPlayer(context, "player");
-                            if (TalentsUtilities.hasAnyTalent(player.getPersistentData())) {
+            .then(Commands.argument("player", EntityArgument.player())
+                .executes(context -> {
+                    ServerPlayer serverPlayer = EntityArgument.getPlayer(context, "player");
+                    if (TalentsUtilities.hasAnyTalent(serverPlayer.getPersistentData())) {
+                        context.getSource().sendSuccess(
+                                () -> Component.literal(serverPlayer.getName().getString() + " has the following talents:"),
+                                false
+                        );
+                        for (TalentsList.Talents talent : TalentsList.Talents.values()) {
+                            if (serverPlayer.getPersistentData().contains(talent.getKey())) {
                                 context.getSource().sendSuccess(
-                                        () -> Component.literal(player.getName().getString() + " has the following talents:"),
-                                        false
-                                );
-                                for (TalentsList.Talents talent : TalentsList.Talents.values()) {
-                                    if (player.getPersistentData().contains(talent.getKey())) {
-                                        context.getSource().sendSuccess(
-                                                () -> Component.literal(talent.toString()),
-                                                false
-                                        );
-                                    }
-                                }
-                            } else {
-                                context.getSource().sendSuccess(
-                                        () -> Component.literal(player.getName().getString() + " has no talents."),
+                                        () -> Component.literal(talent.toString()),
                                         false
                                 );
                             }
-                            return 1;
-                        })));
+                        }
+                    } else {
+                        context.getSource().sendSuccess(
+                                () -> Component.literal(serverPlayer.getName().getString() + " has no talents."),
+                                false
+                        );
+                    }
+                    return 1;
+                }))
+
+                .executes(context -> {
+                    ServerPlayer serverPlayer = context.getSource().getPlayerOrException();
+                    if (TalentsUtilities.hasAnyTalent(serverPlayer.getPersistentData())) {
+                        context.getSource().sendSuccess(
+                                () -> Component.literal("You have the following talents:"),
+                                false
+                        );
+                        for (TalentsList.Talents talent : TalentsList.Talents.values()) {
+                            if (serverPlayer.getPersistentData().contains(talent.getKey())) {
+                                context.getSource().sendSuccess(
+                                        () -> Component.literal(talent.toString()),
+                                        false
+                                );
+                            }
+                        }
+                    } else {
+                        context.getSource().sendSuccess(
+                                () -> Component.literal("You have no talents."),
+                                false
+                        );
+                    }
+                    return 1;
+                })
+        );
 
         dispatcher.register(root);
     }
+
+    private static final SuggestionProvider<CommandSourceStack> TALENT_SUGGESTIONS = (context, builder) -> {
+        for (TalentsList.Talents talent : TalentsList.Talents.values()) {
+            builder.suggest(talent.toString().toLowerCase());
+        }
+        return builder.buildFuture();
+    };
 }

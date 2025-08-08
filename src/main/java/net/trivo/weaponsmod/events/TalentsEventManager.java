@@ -1,17 +1,24 @@
 package net.trivo.weaponsmod.events;
 
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 import net.neoforged.neoforge.event.entity.EntityMountEvent;
 import net.neoforged.neoforge.event.entity.player.AdvancementEvent;
 import net.neoforged.neoforge.event.entity.player.ArrowLooseEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+import net.trivo.weaponsmod.commands.TalentsClientCommands;
 import net.trivo.weaponsmod.talents.TalentsFunctionality;
 
 import static net.trivo.weaponsmod.talents.TalentsFunctionality.*;
 import static net.trivo.weaponsmod.utilities.TalentsAdvancementUtilities.advancementRandomTalentApplyChance;
 
 public class TalentsEventManager {
+
+    @SubscribeEvent
+    public void onRegisterClientCommands(RegisterClientCommandsEvent event) {
+        TalentsClientCommands.register(event.getDispatcher());
+    }
 
     @SubscribeEvent
     public void applyTalentEffects(PlayerTickEvent.Post event) {
