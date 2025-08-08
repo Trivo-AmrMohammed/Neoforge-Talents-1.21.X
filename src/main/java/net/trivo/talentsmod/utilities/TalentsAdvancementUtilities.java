@@ -1,4 +1,4 @@
-package net.trivo.weaponsmod.utilities;
+package net.trivo.talentsmod.utilities;
 
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementHolder;
@@ -13,7 +13,7 @@ import java.util.Random;
 import java.util.Set;
 
 import static com.mojang.text2speech.Narrator.LOGGER;
-import static net.trivo.weaponsmod.utilities.TalentsUtilities.assignRandomTalent;
+import static net.trivo.talentsmod.utilities.TalentsUtilities.assignRandomTalent;
 
 public class TalentsAdvancementUtilities {
 

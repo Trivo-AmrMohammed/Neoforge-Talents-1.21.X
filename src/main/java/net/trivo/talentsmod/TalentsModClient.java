@@ -1,4 +1,4 @@
-package net.trivo.weaponsmod;
+package net.trivo.talentsmod;
 
 import net.minecraft.client.Minecraft;
 import net.neoforged.api.distmarker.Dist;
@@ -11,11 +11,11 @@ import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 
 // This class will not load on dedicated servers. Accessing client side code from here is safe.
-@Mod(value = WeaponsMod.MODID, dist = Dist.CLIENT)
+@Mod(value = TalentsMod.MODID, dist = Dist.CLIENT)
 // You can use EventBusSubscriber to automatically register all static methods in the class annotated with @SubscribeEvent
-@EventBusSubscriber(modid = WeaponsMod.MODID, value = Dist.CLIENT)
-public class WeaponsModClient {
-    public WeaponsModClient(ModContainer container) {
+@EventBusSubscriber(modid = TalentsMod.MODID, value = Dist.CLIENT)
+public class TalentsModClient {
+    public TalentsModClient(ModContainer container) {
         // Allows NeoForge to create a config screen for this mod's configs.
         // The config screen is accessed by going to the Mods screen > clicking on your mod > clicking on config.
         // Do not forget to add translations for your config options to the en_us.json file.
@@ -25,7 +25,7 @@ public class WeaponsModClient {
     @SubscribeEvent
     static void onClientSetup(FMLClientSetupEvent event) {
         // Some client setup code
-        WeaponsMod.LOGGER.info("HELLO FROM CLIENT SETUP");
-        WeaponsMod.LOGGER.info("MINECRAFT NAME >> {}", Minecraft.getInstance().getUser().getName());
+        TalentsMod.LOGGER.info("HELLO FROM CLIENT SETUP");
+        TalentsMod.LOGGER.info("MINECRAFT NAME >> {}", Minecraft.getInstance().getUser().getName());
     }
 }

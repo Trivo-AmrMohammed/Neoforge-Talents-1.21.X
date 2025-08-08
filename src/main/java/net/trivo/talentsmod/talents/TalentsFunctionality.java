@@ -1,4 +1,4 @@
-package net.trivo.weaponsmod.talents;
+package net.trivo.talentsmod.talents;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -19,7 +19,6 @@ import net.neoforged.neoforge.event.entity.EntityMountEvent;
 import net.neoforged.neoforge.event.entity.player.ArrowLooseEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
-import net.trivo.weaponsmod.utilities.TalentsUtilities;
 
 import java.util.Random;
 

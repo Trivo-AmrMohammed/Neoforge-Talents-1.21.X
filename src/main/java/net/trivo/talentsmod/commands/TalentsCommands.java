@@ -1,4 +1,4 @@
-package net.trivo.weaponsmod.commands;
+package net.trivo.talentsmod.commands;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -8,8 +8,8 @@ import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
-import net.trivo.weaponsmod.talents.TalentsList;
-import net.trivo.weaponsmod.utilities.TalentsUtilities;
+import net.trivo.talentsmod.talents.TalentsList;
+import net.trivo.talentsmod.utilities.TalentsUtilities;
 
 import java.util.HashSet;
 

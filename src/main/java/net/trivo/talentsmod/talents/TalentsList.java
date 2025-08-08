@@ -1,4 +1,4 @@
-package net.trivo.weaponsmod.talents;
+package net.trivo.talentsmod.talents;
 
 public class TalentsList {
     public enum Talents {

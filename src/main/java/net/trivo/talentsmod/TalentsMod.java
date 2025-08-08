@@ -1,12 +1,12 @@
-package net.trivo.weaponsmod;
+package net.trivo.talentsmod;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.player.*;
-import net.trivo.weaponsmod.commands.TalentsCommands;
-import net.trivo.weaponsmod.events.TalentsEventManager;
-import net.trivo.weaponsmod.talents.TalentsList;
+import net.trivo.talentsmod.commands.TalentsCommands;
+import net.trivo.talentsmod.events.TalentsEventManager;
+import net.trivo.talentsmod.talents.TalentsList;
 import org.slf4j.Logger;
 import com.mojang.logging.LogUtils;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -17,15 +17,15 @@ import net.neoforged.neoforge.common.NeoForge;
 
 import java.util.*;
 
-import static net.trivo.weaponsmod.utilities.TalentsUtilities.*;
+import static net.trivo.talentsmod.utilities.TalentsUtilities.*;
 
-@Mod(WeaponsMod.MODID)
-public class WeaponsMod {
-    public static final String MODID = "trivoweapons";
+@Mod(TalentsMod.MODID)
+public class TalentsMod {
+    public static final String MODID = "trivotalents";
     public static final Logger LOGGER = LogUtils.getLogger();
     public static final String FIRST_JOIN_TALENTS_KEY = "first_join_talents";
 
-    public WeaponsMod(net.neoforged.bus.api.IEventBus modEventBus, ModContainer modContainer) {
+    public TalentsMod(net.neoforged.bus.api.IEventBus modEventBus, ModContainer modContainer) {
         NeoForge.EVENT_BUS.register(this);
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
         NeoForge.EVENT_BUS.register(new TalentsEventManager());
@@ -63,10 +63,5 @@ public class WeaponsMod {
         if (oldData.contains(key)) {
             newData.putBoolean(key, oldData.getBoolean(key));
         }
-    }
-
-    @SubscribeEvent
-    public void onCommandRegister(RegisterCommandsEvent event) {
-        TalentsCommands.register(event.getDispatcher());
     }
 }

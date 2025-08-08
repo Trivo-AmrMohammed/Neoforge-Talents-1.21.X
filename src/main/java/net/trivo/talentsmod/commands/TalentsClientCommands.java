@@ -1,10 +1,10 @@
-package net.trivo.weaponsmod.commands;
+package net.trivo.talentsmod.commands;
 
 import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
-import net.trivo.weaponsmod.talents.TalentsList;
+import net.trivo.talentsmod.talents.TalentsList;
 
 public class TalentsClientCommands {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {

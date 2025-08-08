@@ -1,4 +1,4 @@
-package net.trivo.weaponsmod;
+package net.trivo.talentsmod;
 
 import java.util.List;
 

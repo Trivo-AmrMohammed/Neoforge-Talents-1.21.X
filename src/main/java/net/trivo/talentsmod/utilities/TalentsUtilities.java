@@ -1,11 +1,9 @@
-package net.trivo.weaponsmod.utilities;
+package net.trivo.talentsmod.utilities;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
-import net.trivo.weaponsmod.talents.TalentsList;
-import org.w3c.dom.stylesheets.LinkStyle;
+import net.trivo.talentsmod.talents.TalentsList;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
