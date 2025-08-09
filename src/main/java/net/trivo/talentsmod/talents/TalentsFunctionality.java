@@ -20,86 +20,55 @@ import net.neoforged.neoforge.event.entity.player.ArrowLooseEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
-import java.util.Random;
+import java.util.*;
+
+import static net.trivo.talentsmod.utilities.TalentsFunctionalityUtilities.applyTalent;
 
 public class TalentsFunctionality {
-
-    public static void applyTalent(ServerPlayer serverPlayer, TalentsList.Talents talents, boolean requirement, MobEffectInstance mobEffect) {
-        if (serverPlayer.getPersistentData().contains(talents.getKey()) && requirement) {
-            serverPlayer.addEffect(mobEffect);
-        }
-    }
-
-    public static void applyTalentEffectsFunctionality(PlayerTickEvent.Post event) {
+        public static void applyTalentEffectsFunctionality(PlayerTickEvent.Post event) {
         if (!(event.getEntity() instanceof ServerPlayer serverPlayer)) return;
         if (serverPlayer.level().isClientSide) return;
-
         ItemStack heldItem = serverPlayer.getItemInHand(InteractionHand.MAIN_HAND);
 
-        applyTalent(serverPlayer, TalentsList.Talents.HEALTHY, !serverPlayer.getFoodData().needsFood(),
-                new MobEffectInstance(MobEffects.HEALTH_BOOST, 5, 1, true, false));
-
-        applyTalent(serverPlayer, TalentsList.Talents.FIGHTING, heldItem.is(ItemTags.SWORDS),
-                new MobEffectInstance(MobEffects.DAMAGE_BOOST, 5, 1, true, false));
-
-        applyTalent(serverPlayer, TalentsList.Talents.MINING, heldItem.is(ItemTags.PICKAXES) || heldItem.is(ItemTags.SHOVELS),
-                new MobEffectInstance(MobEffects.DIG_SPEED, 5, 1, true, false));
-
-        applyTalent(serverPlayer, TalentsList.Talents.FORAGING, heldItem.is(ItemTags.AXES) || heldItem.is(ItemTags.HOES),
-                new MobEffectInstance(MobEffects.DIG_SPEED, 5, 1, true, false));
-
-        applyTalent(serverPlayer, TalentsList.Talents.SNEAKING, serverPlayer.isCrouching(),
-                new MobEffectInstance(MobEffects.INVISIBILITY, 5, 0, true, false));
-
-        applyTalent(serverPlayer, TalentsList.Talents.SWIMMING, serverPlayer.isInWater() && serverPlayer.isSwimming(),
-                new MobEffectInstance(MobEffects.DOLPHINS_GRACE, 5, 0, true, false));
-
-        applyTalent(serverPlayer, TalentsList.Talents.RUNNING, serverPlayer.isSprinting(),
-                new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 5, 1, true, false));
-
-        applyTalent(serverPlayer, TalentsList.Talents.JUMPING, serverPlayer.isCrouching(),
-                new MobEffectInstance(MobEffects.JUMP, 15, 1, true, false));
-
-        if (serverPlayer.hasItemInSlot(EquipmentSlot.HEAD) && serverPlayer.hasItemInSlot(EquipmentSlot.CHEST) && serverPlayer.hasItemInSlot(EquipmentSlot.LEGS) && serverPlayer.hasItemInSlot(EquipmentSlot.FEET) && serverPlayer.getOffhandItem().is(Items.SHIELD))
-        applyTalent(serverPlayer, TalentsList.Talents.ENDURANCE, true,
-                new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 5, 1, true, false));
-        else
-            applyTalent(serverPlayer, TalentsList.Talents.ENDURANCE, serverPlayer.hasItemInSlot(EquipmentSlot.HEAD) || serverPlayer.hasItemInSlot(EquipmentSlot.CHEST)
-                    || serverPlayer.hasItemInSlot(EquipmentSlot.LEGS) || serverPlayer.hasItemInSlot(EquipmentSlot.FEET),
-                    new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 5, 0, true, false));
+        applyTalent(serverPlayer, TalentsList.Talents.HEALTHY, MobEffects.HEALTH_BOOST, 1, 30, !serverPlayer.getFoodData().needsFood());
+        applyTalent(serverPlayer, TalentsList.Talents.FIGHTING, MobEffects.DAMAGE_BOOST, 0, 10, heldItem.is(ItemTags.SWORDS) || heldItem.is(ItemTags.AXES));
+        applyTalent(serverPlayer, TalentsList.Talents.MINING, MobEffects.DIG_SPEED, 0, 10, heldItem.is(ItemTags.PICKAXES) || heldItem.is(ItemTags.SHOVELS));
+        applyTalent(serverPlayer, TalentsList.Talents.FORAGING, MobEffects.DIG_SPEED, 0, 10, heldItem.is(ItemTags.AXES) || heldItem.is(ItemTags.HOES));
+        applyTalent(serverPlayer, TalentsList.Talents.SNEAKING, MobEffects.INVISIBILITY, 2, serverPlayer.isCrouching());
+        applyTalent(serverPlayer, TalentsList.Talents.SWIMMING, MobEffects.DOLPHINS_GRACE,  5, serverPlayer.isInWater() && serverPlayer.isSwimming());
+        applyTalent(serverPlayer, TalentsList.Talents.RUNNING, MobEffects.MOVEMENT_SPEED, 0, 5, 5, serverPlayer.isSprinting());
+        applyTalent(serverPlayer, TalentsList.Talents.JUMPING, MobEffects.JUMP, 0, 0, serverPlayer.isCrouching());
+        applyTalent(serverPlayer, TalentsList.Talents.ENDURANCE, MobEffects.DAMAGE_RESISTANCE, 0, serverPlayer.hasItemInSlot(EquipmentSlot.HEAD) || serverPlayer.hasItemInSlot(EquipmentSlot.CHEST) || serverPlayer.hasItemInSlot(EquipmentSlot.LEGS) || serverPlayer.hasItemInSlot(EquipmentSlot.FEET), serverPlayer.hasItemInSlot(EquipmentSlot.HEAD) && serverPlayer.hasItemInSlot(EquipmentSlot.CHEST) && serverPlayer.hasItemInSlot(EquipmentSlot.LEGS) && serverPlayer.hasItemInSlot(EquipmentSlot.FEET) && serverPlayer.getOffhandItem().is(Items.SHIELD));
     }
 
     public static void farmingTalentFunctionality(BlockEvent.BreakEvent event) {
         if (!(event.getPlayer() instanceof ServerPlayer serverPlayer)) return;
-
-        CompoundTag persistentData = serverPlayer.getPersistentData();
-        if (!persistentData.contains("talent_farming")) return;
-
-        ServerLevel level = serverPlayer.serverLevel();
-        if (level.isClientSide()) return;
+        if (!serverPlayer.getPersistentData().contains("talent_farming")) return;
+        if (serverPlayer.serverLevel().isClientSide()) return;
 
         BlockPos pos = event.getPos();
         BlockState state = event.getState();
+        ServerLevel serverLevel = serverPlayer.serverLevel();
 
         if (state.getBlock() instanceof BeetrootBlock) {
             if (state.getValue(BlockStateProperties.AGE_3) == 3) {
-                level.getServer().execute(() -> level.setBlockAndUpdate(pos, Blocks.BEETROOTS.defaultBlockState()
+                serverLevel.getServer().execute(() -> serverLevel.setBlockAndUpdate(pos, Blocks.BEETROOTS.defaultBlockState()
                         .setValue(BeetrootBlock.AGE, 2)));
             }
         } else if (state.getBlock() instanceof CropBlock crop) {
             if (crop.getAge(state) == crop.getMaxAge()) {
                 int random = 1 + new Random().nextInt(3);
-                level.getServer().execute(() -> level.setBlockAndUpdate(pos, crop.defaultBlockState()
+                serverLevel.getServer().execute(() -> serverLevel.setBlockAndUpdate(pos, crop.defaultBlockState()
                         .setValue(CropBlock.AGE, crop.getMaxAge() - random)));
             }
         } else if (state.getBlock() instanceof NetherWartBlock) {
             if (state.getValue(BlockStateProperties.AGE_3) == 3) {
-                level.getServer().execute(() -> level.setBlockAndUpdate(pos, Blocks.NETHER_WART.defaultBlockState()
+                serverLevel.getServer().execute(() -> serverLevel.setBlockAndUpdate(pos, Blocks.NETHER_WART.defaultBlockState()
                         .setValue(NetherWartBlock.AGE, 2)));
             }
         } else if (state.getBlock() instanceof CocoaBlock) {
             if (state.getValue(BlockStateProperties.AGE_2) == 2) {
-                level.getServer().execute(() -> level.setBlockAndUpdate(pos,
+                serverLevel.getServer().execute(() -> serverLevel.setBlockAndUpdate(pos,
                         Blocks.COCOA.defaultBlockState().setValue(BlockStateProperties.HORIZONTAL_FACING,
                                 state.getValue(BlockStateProperties.HORIZONTAL_FACING)).setValue(CocoaBlock.AGE, 1)));
             }
@@ -108,12 +77,10 @@ public class TalentsFunctionality {
 
 
     public static void archeryTalentFunctionality(ArrowLooseEvent event) {
-        if (!(event.getEntity() instanceof ServerPlayer player)) return;
-        if (player.getMainHandItem().is(Items.BOW)) {
+        if (!(event.getEntity() instanceof ServerPlayer serverPlayer)) return;
+        if (!serverPlayer.getPersistentData().contains("talent_archery")) return;
 
-            CompoundTag persistentData = player.getPersistentData();
-            if (!persistentData.contains("talent_archery")) return;
-
+        if (serverPlayer.getMainHandItem().is(Items.BOW)) {
             int charge = event.getCharge();
             event.setCharge(Math.min(charge * 2, 20));
         }
@@ -122,19 +89,18 @@ public class TalentsFunctionality {
     public static void ridingTalentFunctionality(EntityMountEvent event) {
         if (!(event.getEntityMounting() instanceof ServerPlayer serverPlayer)) return;
         if (!(event.getEntityBeingMounted() instanceof LivingEntity livingEntity)) return;
+        if (!serverPlayer.getPersistentData().contains("talent_riding")) return;
 
-        MobEffectInstance speed = new MobEffectInstance(MobEffects.MOVEMENT_SPEED, Integer.MAX_VALUE, 1, true, false);
-        MobEffectInstance jump = new MobEffectInstance(MobEffects.JUMP, Integer.MAX_VALUE, 1, true, false);
-
-        CompoundTag persistentData = serverPlayer.getPersistentData();
-        if (!persistentData.contains("talent_riding")) return;
+        MobEffectInstance speed = new MobEffectInstance(MobEffects.MOVEMENT_SPEED, Integer.MAX_VALUE, 1, true, true, false);
+        MobEffectInstance jump = new MobEffectInstance(MobEffects.JUMP, Integer.MAX_VALUE, 1, true, true, false);
 
         if (event.isMounting()) {
             livingEntity.addEffect(speed);
             livingEntity.addEffect(jump);
         }
         if (event.isDismounting()) {
-            livingEntity.removeAllEffects();
+            livingEntity.removeEffect(MobEffects.MOVEMENT_SPEED);
+            livingEntity.removeEffect(MobEffects.JUMP);
         }
     }
 }
